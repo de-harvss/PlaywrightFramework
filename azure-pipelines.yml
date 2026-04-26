@@ -1,0 +1,40 @@
+# Playwright tests — run as steps in your release pipeline after deploying to staging.
+# Set STAGING_API_URL and STAGING_UI_URL as secret pipeline variables.
+#
+# To trigger from a deploy pipeline rather than a direct push:
+#   Edit → Triggers → Pipeline completion triggers → add your deploy pipeline.
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '22.x'
+    displayName: Install Node.js
+
+  - script: npm ci
+    displayName: Install dependencies
+
+  - script: npx playwright install chromium --with-deps
+    displayName: Install Playwright browsers
+
+  # One step per service subfolder. Add a step here when adding a new service.
+  - script: npx playwright test tests/api/todos-api --project=api
+    displayName: API tests — todos-api
+    env:
+      BASE_API_URL: $(STAGING_API_URL)
+
+  - script: npx playwright test --project=ui
+    displayName: UI tests
+    env:
+      BASE_API_URL: $(STAGING_API_URL)
+      BASE_UI_URL: $(STAGING_UI_URL)
+
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      targetPath: playwright-report
+      artifact: playwright-report
+    displayName: Publish HTML report

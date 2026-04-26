@@ -1,0 +1,24 @@
+{
+  "name": "playwright-framework",
+  "version": "1.0.0",
+  "description": "Playwright API + UI test framework",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui",
+    "test:api:staging": "cross-env ENV=staging playwright test --project=api",
+    "test:ui:staging": "cross-env ENV=staging playwright test --project=ui",
+    "test:api:production": "cross-env ENV=production playwright test --project=api",
+    "test:ui:production": "cross-env ENV=production playwright test --project=ui",
+    "test:report": "playwright show-report",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.0.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.7.0"
+  }
+}
